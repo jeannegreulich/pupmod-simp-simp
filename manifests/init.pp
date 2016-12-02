@@ -37,6 +37,12 @@
 #   If true, use the ssh_global_known_hosts function to gather the various host
 #   SSH public keys and populate the /etc/ssh/known_hosts file.
 #
+# @param version_info Boolean
+#   Drops SIMP and SIMP-version related information to the filesystem.
+#
+# @param manage_root_metadata Boolean
+#   Include the simp::root_user class, which manages resources related to the root user.
+#
 # @param enable_filebucketing Boolean
 #   If true, enable the server-side filebucket for all managed files on the
 #   client system.
@@ -73,19 +79,8 @@
 #
 #   As set, meets CCE-27457-1
 #
-# @params manage_root_perms Boolean
-#   Ensure that /root has restricted permissions and proper SELinux
-#   contexts.
-#
 # @params disable_rc_local Boolean
 #   If true, disable the use of the /etc/rc.local file.
-#
-# @params ftpusers_min String
-#   The start of the local user account IDs. This is used to populate
-#   /etc/ftpusers with all system accounts (below this number) so that
-#   they cannot ftp into the system.
-#
-#   Set to an empty string ('') to disable.
 #
 # == Hiera Variables
 #
@@ -109,6 +104,8 @@ class simp (
   Boolean $use_sssd                   = $::simp::params::use_sssd,
   Boolean $use_ssh_global_known_hosts = false,
   Boolean $use_stock_sssd             = true,
+  Boolean $version_info               = true,
+  Boolean $manage_root_metadata       = true,
   Boolean $enable_filebucketing       = true,
   $filebucket_server                  = '',
   $puppet_server                      = defined('$::servername') ? { true => $::servername, default => hiera('puppet::server','') },
@@ -117,11 +114,7 @@ class simp (
   String $runlevel                    = '3',
   Boolean $core_dumps                 = false,
   String $max_logins                  = '10',
-  Boolean $manage_root_perms          = true,
   Boolean $disable_rc_local           = true,
-  String $ftpusers_min                = '500',
-  Boolean $manage_root_user           = true,
-  Boolean $manage_root_group          = true
 ) inherits ::simp::params {
 
   if empty($rsync_stunnel) and defined('$::servername') {
@@ -177,8 +170,20 @@ class simp (
     }
   }
 
+  if $use_fips {
+    include '::fips'
+  }
+
   if $use_sudoers_aliases {
     include '::simp::sudoers'
+  }
+
+  if $version_info {
+    include '::simp::version'
+  }
+
+  if $manage_root_metadata {
+    include '::simp::root_user'
   }
 
   if !empty($puppet_server_ip) and !empty($puppet_server) {
@@ -195,17 +200,6 @@ class simp (
 
   runlevel { $runlevel: }
 
-  if !empty($ftpusers_min) {
-    file { '/etc/ftpusers':
-      ensure => 'file',
-      force  => true,
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0600'
-    }
-    ftpusers { '/etc/ftpusers': min_id => $ftpusers_min }
-  }
-
   if $disable_rc_local {
     file { '/etc/rc.d/rc.local':
       ensure  => 'file',
@@ -220,38 +214,6 @@ class simp (
     }
   }
 
-  file { '/etc/simp':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-  }
-
-  file { '/etc/simp/simp.version':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => simp_version()
-  }
-
-  file { '/usr/local/sbin/simp':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0640'
-  }
-
-  if !$core_dumps {
-    pam::limits::add { 'prevent_core':
-      domain => '*',
-      type   => 'hard',
-      item   => 'core',
-      value  => '0',
-      order  => '100'
-    }
-  }
-
   if $max_logins {
     pam::limits::add { 'max_logins':
       domain => '*',
@@ -259,40 +221,6 @@ class simp (
       item   => 'maxlogins',
       value  => $max_logins,
       order  => '100'
-    }
-  }
-
-  if $manage_root_perms {
-    file { '/root':
-      ensure => 'directory',
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0700'
-    }
-  }
-
-  if $manage_root_user {
-    user { 'root':
-      ensure     => 'present',
-      uid        => '0',
-      gid        => '0',
-      allowdupe  => false,
-      home       => '/root',
-      shell      => '/bin/bash',
-      groups     => [ 'bin', 'daemon', 'sys', 'adm', 'disk', 'wheel' ],
-      membership => 'minimum',
-      forcelocal => true
-    }
-  }
-
-  if $manage_root_group {
-    group { 'root':
-      ensure          => 'present',
-      gid             => '0',
-      allowdupe       => false,
-      auth_membership => true,
-      forcelocal      => true,
-      members         => ['root']
     }
   }
 
@@ -309,13 +237,11 @@ class simp (
     }
   }
 
-  ### MOVE TO PUPMOD?
-    file { "${::puppet_vardir}/simp":
-      ensure => 'directory',
-      mode   => '0750',
-      owner  => 'root',
-      group  => 'root'
-    }
-  ### END PUPMOD? JANK
+  file { "${facts['puppet_vardir']}/simp":
+    ensure => 'directory',
+    mode   => '0750',
+    owner  => 'root',
+    group  => 'root'
+  }
 
 }
