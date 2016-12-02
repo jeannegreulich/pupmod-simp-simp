@@ -131,7 +131,7 @@ class simp (
     $_rsync_stunnel = $rsync_stunnel
   }
 
-  if !empty($_rsync_stunnel) { validate_net_list($_rsync_stunnel) }
+  if !empty($_rsync_stunnel)    { validate_net_list($_rsync_stunnel) }
   if !empty($filebucket_server) { validate_net_list($filebucket_server) }
   if !empty($puppet_server)     { validate_net_list($puppet_server) }
   if !empty($puppet_server_ip)  { validate_net_list($puppet_server_ip) }
@@ -175,10 +175,6 @@ class simp (
       include 'nscd::group'
       include 'nscd::services'
     }
-  }
-
-  if $use_fips {
-    include '::simp::fips'
   }
 
   if $use_sudoers_aliases {
