@@ -1,29 +1,19 @@
-# == Class: simp::yum
-#
 # This class sets up the /etc/yum directory, and ensures that
 # yum-skip-broken is installed.
 #
-# == Parameters
-#
-# [*servers*]
-# Type: Array of FQDN or IP address
+# @param servers Array
+#   Type: Array of FQDN or IP address
 #   The FQDN or IP of the yum server to which to connect for the default
 #   repositories.
 #
-# [*enable_simp_repos*]
-# Type: Boolean
-# Default: true
+# @param enable_simp_repos Boolean
 #   If true, enable the default SIMP repositories. You should probably
 #   leave this as is unless you really know what you are doing.
 #
-# [*enable_auto_updates*]
-# Type: Boolean
-# Default: true
+# @param enable_auto_updates Boolean
 #   If true, enable the automatic yum cron job. If false, remove it.
 #
-# [*os_update_url*]
-# Type: String
-# Default: "https://YUM_SERVER/yum/${::operatingsystem}/${::operatingsystemmajrelease}/${::hardwaremodel}/Updates"
+# @param os_update_url Variant[HttpsUrl,HttpUrl]
 #   This is a specially crafted string that handles the case where you want to
 #   pass in multiple yum servers.
 #
@@ -33,18 +23,14 @@
 #   This is not ideal but there is no way to know exactly how you wish to
 #   structure your repositories if you deviate from the base.
 #
-# [*os_gpg_url*]
-# Type: String
-#   Default: ''
-#     If set, this is a specially crafted string that handles GPG url creation.
+# @param os_gpg_url Variant[HttpsUrl,HttpUrl]
+#   If set, this is a specially crafted string that handles GPG url creation.
 #
-#     The string YUM_SERVER (all caps) will be replaced with the various
-#     $servers entries appropriately.
+#   The string YUM_SERVER (all caps) will be replaced with the various
+#   $servers entries appropriately.
 #
 #
-# [*simp_update_url*]
-# Type: String
-# Default: "https://YUM_SERVER/yum/SIMP/${::hardwaremodel}"
+# @param simp_update_url Variant[HttpsUrl,HttpUrl]
 #   This is a specially crafted string that handles the case where you
 #   want to pass in multiple yum servers.
 #
@@ -54,33 +40,26 @@
 #   This is not ideal but there is no way to know exactly how you wish
 #   to structure your repositories if you deviate from the base.
 #
-# [*simp_gpg_url*]
-# Type: String
-# Default: "https://YUM_SERVER/yum/SIMP"
+# @param simp_gpg_url Variant[HttpsUrl,HttpUrl]
 #   This is a specially crafted string that handles GPG url creation.
 #
 #   The string YUM_SERVER (all caps) will be replaced with the various
 #   $servers entries appropriately.
 #
 class simp::yum (
-  $servers,
-  $enable_simp_repos = true,
-  $enable_os_repos = true,
-  $enable_auto_updates = true,
-  $os_update_url = "https://YUM_SERVER/yum/${::operatingsystem}/${::operatingsystemmajrelease}/${::hardwaremodel}/Updates",
-  $os_gpg_url = '',
-  $simp_update_url = "https://YUM_SERVER/yum/SIMP/${::hardwaremodel}",
-  $simp_gpg_url = ''
-
+  Array $servers,
+  Boolean $enable_simp_repos   = true,
+  Boolean $enable_os_repos     = true,
+  Boolean $enable_auto_updates = true,
+  Variant[HttpsUrl,HttpUrl] $os_update_url   = "https://YUM_SERVER/yum/${::operatingsystem}/${::operatingsystemmajrelease}/${::hardwaremodel}/Updates",
+  Variant[HttpsUrl,HttpUrl] $os_gpg_url      = '',
+  Variant[HttpsUrl,HttpUrl] $simp_update_url = "https://YUM_SERVER/yum/SIMP/${::hardwaremodel}",
+  Variant[HttpsUrl,HttpUrl] $simp_gpg_url    = ''
 ){
-  validate_array($servers)
   validate_net_list($servers)
-  validate_bool($enable_simp_repos)
-  validate_bool($enable_auto_updates)
-
 
   if $enable_auto_updates {
-    include 'simplib::yum_schedule'
+    include 'simp::yum_schedule'
   }
   else {
     cron { 'yum_update': ensure => 'absent' }

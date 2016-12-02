@@ -55,6 +55,9 @@
 #   Type: IP Address
 #   See $puppet_server above.
 #
+# @params use_sudoers_aliases Boolean
+#   If true, enable simp site sudoers aliases.
+#
 # @params runlevel String
 #   Expects: 1-5, rescue, multi-user, or graphical
 #   The default runlevel to which the system should be set.
@@ -110,6 +113,7 @@ class simp (
   $filebucket_server                  = '',
   $puppet_server                      = defined('$::servername') ? { true => $::servername, default => hiera('puppet::server','') },
   $puppet_server_ip                   = '',
+  Boolean $use_sudoers_aliases        = true,
   String $runlevel                    = '3',
   Boolean $core_dumps                 = false,
   String $max_logins                  = '10',
@@ -178,6 +182,10 @@ class simp (
 
   if $use_fips {
     include '::simp::fips'
+  }
+
+  if $use_sudoers_aliases {
+    include '::simp::sudoers'
   }
 
   if !empty($puppet_server_ip) and !empty($puppet_server) {

@@ -1,69 +1,46 @@
-# == Class: simp::admin
-#
 # This class sets up a host of common administrative functions including
 # administrator group system access, auditor access, and default sudo rules.
 #
-# == Parameters
-#
-# [*admin_group*]
-# Type: String
-# Default: administrators
+# @params admin_group String
 #   The group name of the administrators of the system.
 #   This group will be provided with the ability to sudo to root on the system.
 #
-# [*passwordless_admin_sudo*]
-# Type: Boolean
-# Default: true
+# @params passwordless_admin_sudo Boolean
 #   If true, allow administrators to use sudo without a password. This is on by
 #   default due to the expected use of SSH keys and lack of local passwords.
 #
-# [*auditor_group*]
-# Type: String
-# Default: security
+# @params auditor_group String
 #   The group name of the system auditors group.
 #   This group will be provided with the ability to perform selected safe
 #   commands as root on the system for auditing purposes.
 #
-# [*passwordless_auditor_sudo*]
-# Type: Boolean
-# Default: true
+# @params passwordless_auditor_sudo Boolean
 #   If true, allow auditors to use sudo without a password. This is on by
 #   default due to the expected use of SSH keys and lack of local passwords.
 #
-# [*admin_allowed_from*]
+# @params admin_allowed_from Array
 # Type: Array of pam::access compatible entries
-# Default: ['ALL']
 #   The locations from which administrators are allowed to access the system.
 #   Set to all locations by default.
 #
-# [*auditors_allowed_from*]
+# @params auditors_allowed_from Array
 # Type: Array of pam::access compatible entries
 # Default: hiera('client_nets',['ALL'])
 #   The locations from which auditors are allowed to access the system.
 #   Set to client_nets by default with a fallback of ALL locations.
 #
-# == Authors
-#   * Trevor Vaughan <tvaughan@onyxpoint.com>
+# @uthors Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class simp::admin (
-  $admin_group = 'administrators',
-  $passwordless_admin_sudo = true,
-  $auditor_group = 'security',
-  $passwordless_auditor_sudo = true,
-  $admins_allowed_from = ['ALL'],
-  $auditors_allowed_from = defined('$::client_nets') ? { true  => $::client_nets, default =>  hiera('client_nets',['ALL']) },
-  $force_sudosh = true
+  String $admin_group                = 'administrators',
+  Boolean $passwordless_admin_sudo   = true,
+  String $auditor_group              = 'security',
+  Boolean $passwordless_auditor_sudo = true,
+  Array $admins_allowed_from         = ['ALL'],
+  Array $auditors_allowed_from       = defined('$::client_nets') ? { true => $::client_nets, default => hiera('client_nets',['ALL']) },
+  Boolean $force_sudosh              = true
 ){
   include 'simplib::sudoers'
-
-  validate_string($admin_group)
-  validate_bool($passwordless_admin_sudo)
-  validate_string($auditor_group)
-  validate_bool($passwordless_auditor_sudo)
-  validate_array($admins_allowed_from)
-  validate_array($auditors_allowed_from)
-  validate_bool($force_sudosh)
-
 
   # Make sure that the administrators group can access your system remotely.
   # Without some entry like this, you will not be able to access the system
