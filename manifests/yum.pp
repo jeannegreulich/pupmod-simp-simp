@@ -29,7 +29,6 @@
 #   The string YUM_SERVER (all caps) will be replaced with the various
 #   $servers entries appropriately.
 #
-#
 # @param simp_update_url Variant[HttpsUrl,HttpUrl]
 #   This is a specially crafted string that handles the case where you
 #   want to pass in multiple yum servers.
@@ -59,7 +58,7 @@ class simp::yum (
   validate_net_list($servers)
 
   if $enable_auto_updates {
-    include 'simp::yum_schedule'
+    include '::simp::yum_schedule'
   }
   else {
     cron { 'yum_update': ensure => 'absent' }
@@ -77,7 +76,7 @@ class simp::yum (
   }
 
   $_simp_repo_enable = $enable_simp_repos ? { true => 1, default => 0 }
-  $_os_repo_enable = $enable_os_repos ? { true => 1, default => 0 }
+  $_os_repo_enable   = $enable_os_repos ?   { true => 1, default => 0 }
 
   if empty($os_gpg_url) {
     $_temp_os_gpg_url = $::operatingsystem ? {

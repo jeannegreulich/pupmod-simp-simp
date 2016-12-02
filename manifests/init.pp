@@ -69,7 +69,7 @@
 #
 # @params max_logins Integer
 #   The number of logins that an account may have on the system at a given time
-#   as enforced by PAM.
+#   as enforced by PAM. Set to undef to disable.
 #
 #   As set, meets CCE-27457-1
 #
@@ -120,15 +120,12 @@ class simp (
   Boolean $manage_root_perms          = true,
   Boolean $disable_rc_local           = true,
   String $ftpusers_min                = '500',
+  Boolean $manage_root_user           = true,
+  Boolean $manage_root_group          = true
 ) inherits ::simp::params {
 
-  if empty($rsync_stunnel) {
-    if defined('$::servername') {
-      $_rsync_stunnel = $::servername
-    }
-    else {
-      $_rsync_stunnel = ''
-    }
+  if empty($rsync_stunnel) and defined('$::servername') {
+    $_rsync_stunnel = $::servername
   }
   else {
     $_rsync_stunnel = $rsync_stunnel
@@ -136,8 +133,8 @@ class simp (
 
   if !empty($_rsync_stunnel) { validate_net_list($_rsync_stunnel) }
   if !empty($filebucket_server) { validate_net_list($filebucket_server) }
-  if !empty($puppet_server) { validate_net_list($puppet_server) }
-  if !empty($puppet_server_ip) { validate_net_list($puppet_server_ip) }
+  if !empty($puppet_server)     { validate_net_list($puppet_server) }
+  if !empty($puppet_server_ip)  { validate_net_list($puppet_server_ip) }
   validate_integer($max_logins)
 
   if !$enable_filebucketing {
@@ -259,12 +256,14 @@ class simp (
     }
   }
 
-  pam::limits::add { 'max_logins':
-    domain => '*',
-    type   => 'hard',
-    item   => 'maxlogins',
-    value  => $max_logins,
-    order  => '100'
+  if $max_logins {
+    pam::limits::add { 'max_logins':
+      domain => '*',
+      type   => 'hard',
+      item   => 'maxlogins',
+      value  => $max_logins,
+      order  => '100'
+    }
   }
 
   if $manage_root_perms {
@@ -276,26 +275,30 @@ class simp (
     }
   }
 
-  user { 'root':
-    ensure     => 'present',
-    uid        => '0',
-    gid        => '0',
-    allowdupe  => false,
-    home       => '/root',
-    shell      => '/bin/bash',
-    groups     => [ 'bin', 'daemon', 'sys', 'adm', 'disk', 'wheel' ],
-    membership => 'minimum',
-    forcelocal => true
+  if $manage_root_user {
+    user { 'root':
+      ensure     => 'present',
+      uid        => '0',
+      gid        => '0',
+      allowdupe  => false,
+      home       => '/root',
+      shell      => '/bin/bash',
+      groups     => [ 'bin', 'daemon', 'sys', 'adm', 'disk', 'wheel' ],
+      membership => 'minimum',
+      forcelocal => true
+    }
   }
 
-  group { 'root':
-    ensure          => 'present',
-    gid             => '0',
-    allowdupe       => false,
-    auth_membership => true,
-    forcelocal      => true,
-    members         => ['root']
+  if $manage_root_group {
+    group { 'root':
+      ensure          => 'present',
+      gid             => '0',
+      allowdupe       => false,
+      auth_membership => true,
+      forcelocal      => true,
+      members         => ['root']
     }
+  }
 
   if $use_ssh_global_known_hosts {
     ssh_global_known_hosts()
