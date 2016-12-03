@@ -50,10 +50,10 @@ class simp::yum (
   Boolean $enable_simp_repos   = true,
   Boolean $enable_os_repos     = true,
   Boolean $enable_auto_updates = true,
-  Variant[HttpsUrl,HttpUrl] $os_update_url   = "https://YUM_SERVER/yum/${::operatingsystem}/${::operatingsystemmajrelease}/${::hardwaremodel}/Updates",
-  Variant[HttpsUrl,HttpUrl] $os_gpg_url      = '',
-  Variant[HttpsUrl,HttpUrl] $simp_update_url = "https://YUM_SERVER/yum/SIMP/${::hardwaremodel}",
-  Variant[HttpsUrl,HttpUrl] $simp_gpg_url    = ''
+  Variant[Stdlib::HttpsUrl,Stdlib::HttpUrl,Undef] $os_update_url   = "https://YUM_SERVER/yum/${::operatingsystem}/${::operatingsystemmajrelease}/${::hardwaremodel}/Updates",
+  Variant[Stdlib::HttpsUrl,Stdlib::HttpUrl,Undef] $os_gpg_url      = undef,
+  Variant[Stdlib::HttpsUrl,Stdlib::HttpUrl,Undef] $simp_update_url = "https://YUM_SERVER/yum/SIMP/${::hardwaremodel}",
+  Variant[Stdlib::HttpsUrl,Stdlib::HttpUrl,Undef] $simp_gpg_url    = undef
 ){
   validate_net_list($servers)
 
@@ -66,13 +66,13 @@ class simp::yum (
 
   file { [
     '/etc/yum',
-    '/etc/yum.repos.d'
+    '/etc/yum.repos.d',
   ]:
       ensure  => 'directory',
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      recurse => true
+      recurse => true,
   }
 
   $_simp_repo_enable = $enable_simp_repos ? { true => 1, default => 0 }
@@ -107,7 +107,7 @@ class simp::yum (
     sslverify       => 0,
     keepalive       => 0,
     metadata_expire => '3600',
-    tag             => 'firstrun'
+    tag             => 'firstrun',
   }
 
   yumrepo { 'simp':
@@ -120,6 +120,6 @@ class simp::yum (
     sslverify       => 0,
     keepalive       => 0,
     metadata_expire => '3600',
-    tag             => 'firstrun'
+    tag             => 'firstrun',
   }
 }
