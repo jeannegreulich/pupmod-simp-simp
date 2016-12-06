@@ -22,16 +22,8 @@
 #   It is highly recommended that you use Logstash as your syslog server if at
 #   all possible.
 #
-# @param use_nscd Boolean
-#   Whether or not to use NSCD in the installation instead of SSSD. If
-#   '$use_sssd = true' then this will not be referenced.
-#
 # @param use_sssd Boolean
 #   Whether or not to use SSSD in the installation.
-#   There are issues where SSSD will allow a login, even if the user's password
-#   has expire, if the user has a valid SSH key. However, in EL7+, there are
-#   issues with nscd and nslcd which can lock users our of the system when
-#   using LDAP.
 #
 # @param use_ssh_global_known_hosts Boolean
 #   If true, use the ssh_global_known_hosts function to gather the various host
@@ -90,8 +82,6 @@
 # @param use_sssd
 #   See above
 #
-# @param use_nscd
-#   See above
 #
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
@@ -100,8 +90,7 @@ class simp (
   $rsync_stunnel                      = hiera('rsync::stunnel',hiera('puppet::server',''),''),
   Boolean $use_fips                   = defined('$::use_fips') ? { true => $::use_fips, default => hiera('use_fips',false) },
   Boolean $use_ldap                   = defined('$::use_ldap') ? { true => $::use_ldap, default => hiera('use_ldap',true) },
-  Boolean $use_nscd                   = $::simp::params::use_nscd,
-  Boolean $use_sssd                   = $::simp::params::use_sssd,
+  Boolean $use_sssd                   = defined('$::use_sssd') ? { true => $::use_sssd, default => hiera('use_sssd',true) },
   Boolean $use_ssh_global_known_hosts = false,
   Boolean $use_stock_sssd             = true,
   Boolean $version_info               = true,
@@ -159,14 +148,6 @@ class simp (
   if $use_sssd {
     if $use_stock_sssd {
       include '::simp::sssd::client'
-    }
-  }
-  else {
-    if $use_nscd {
-      include 'nscd'
-      include 'nscd::passwd'
-      include 'nscd::group'
-      include 'nscd::services'
     }
   }
 
