@@ -34,11 +34,33 @@ class simp::stig_packages(
   Boolean                     $enable_warnings    = true
 ) {
 
+    package { 'screen':
+      ensure => absent
+    }
 
-    stig_packages{ 'stig_packages':
-      remove  => $absent_packages,
-      add     => $install_packages,
+    package { 'rsh-server':
+      ensure => present
+    }
+
+    package { 'ypserv':
+      ensure => absent
+    }
+
+
+    deferred_packages{ 'stig_packages_remove':
+      packages  => $absent_packages,
       warning => $enable_warnings,
       mode    => $mode
     }
+
+    deferred_packages{ 'stig_packages_add':
+      packages        => $install_packages,
+      warning         => $enable_warnings,
+      mode            => $mode,
+      default_options => {'ensure' => 'present'}
+    }
+
+   deferred_packages{ 'junk':
+     packages    => ['zsh', 'znc'],
+   }
 }
