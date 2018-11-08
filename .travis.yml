@@ -87,7 +87,7 @@ jobs:
       rvm: 2.4.4
       env: PUPPET_VERSION="~> 5.0"
       script:
-        - bundle exec rake spec
+        - bundle exec rake spec_parallel
 
     - stage: spec
       name: 'Latest Puppet 6.x (allowed to fail)'
