@@ -42,9 +42,11 @@ before_install:
 global:
   - STRICT_VARIABLES=yes
 
+# Adding 4.10 to allow failures because it is timing out.
 jobs:
   allow_failures:
     - name: 'Latest Puppet 6.x (allowed to fail)'
+    - name: 'Puppet 4.10 (SIMP 6.2, PE 2016.4)'
 
   include:
     - stage: check
@@ -66,7 +68,7 @@ jobs:
       rvm: 2.1.9
       env: PUPPET_VERSION="~> 4.10.0"
       script:
-        - bundle exec rake spec
+        - bundle exec rake spec_parallel
 
     - stage: spec
       name: 'Puppet 5.3 (PE 2017.3)'
