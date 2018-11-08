@@ -224,69 +224,64 @@ pup5.5.7-base_apps:
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[base_apps]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[base_apps]'
 
 pup5.5.7-no_simp_server:
   stage: acceptance
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[no_simp_server]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[no_simp_server]'
 
 pup5.5.7-netconsole:
   stage: acceptance
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[netconsole]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[netconsole]'
 
 pup5.5.7-one_shot_scenario:
   stage: acceptance
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_one_shot]
-
-pup4.10-one_shot_scenario-puppet5:
-  stage: acceptance
-  <<: *pup_4_10
-  <<: *acceptance_tests
-  <<: *only_with_SIMP_FULL_MATRIX
-  script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_one_shot]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_one_shot]'
 
 pup5.5.7-poss_scenario:
   stage: acceptance
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_poss]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_poss]'
 
 pup5.5.7-remote_access_scenario:
   stage: acceptance
   <<: *pup_5_5_7
   <<: *acceptance_tests
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_remote_access]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_remote_access]'
 
 pup4.10:
+  stage: acceptance
   <<: *pup_4_10
   <<: *acceptance_tests
   script:
+    - 'bundle exec rake spec_clean'
     - 'bundle exec rake beaker:suites[default]'
 
 pup4.10-fips:
+  stage: acceptance
   <<: *pup_4_10
   <<: *acceptance_tests
   <<: *only_with_SIMP_FULL_MATRIX
   script:
+    - 'bundle exec rake spec_clean'
     - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
 
 pup4.10-poss_scenario:
@@ -295,8 +290,8 @@ pup4.10-poss_scenario:
   <<: *acceptance_tests
   <<: *only_with_SIMP_FULL_MATRIX
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_poss]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_poss]'
 
 pup4.10-remote_access_scenario:
   stage: acceptance
@@ -304,6 +299,15 @@ pup4.10-remote_access_scenario:
   <<: *acceptance_tests
   <<: *only_with_SIMP_FULL_MATRIX
   script:
-    - bundle exec rake spec_clean
-    - bundle exec rake beaker:suites[scenario_remote_access]
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_remote_access]'
+
+pup4.10-one_shot_scenario-puppet5:
+  stage: acceptance
+  <<: *pup_4_10
+  <<: *acceptance_tests
+  <<: *only_with_SIMP_FULL_MATRIX
+  script:
+    - 'bundle exec rake spec_clean'
+    - 'bundle exec rake beaker:suites[scenario_one_shot]'
 
