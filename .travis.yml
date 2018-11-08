@@ -42,11 +42,9 @@ before_install:
 global:
   - STRICT_VARIABLES=yes
 
-# Adding 4.10 to allow failures because it is timing out.
 jobs:
   allow_failures:
     - name: 'Latest Puppet 6.x (allowed to fail)'
-    - name: 'Puppet 4.10 (SIMP 6.2, PE 2016.4)'
 
   include:
     - stage: check
