@@ -1,3 +1,19 @@
+* Thu Jan 23 2020 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 4.11.0-0
+- SSSD V2 used in EL8 does not, by default, have a local provider.  The default
+  to configure the local provider in simp::sssd::client was set to false for
+  EL8.
+- Allow sssd to be configured without domain in EL8 only. This might be
+  a desired configuration in EL8 because of the performance enhancements
+  of using sssd to look up local files over using nss.
+- Deprecate the sssd client autofs, ssh and sudo settings.  The sssd
+  module will configure the services if the service is listed in
+  sssd::services.
+
+- Removed statement in sssd::client that prevented setup of sssd if local or ldap
+  was not enabled.  simp::stock_sssd set to false will do the same thing and setting
+  up sssd with just pam and nss is valid  and  supposedly faster then using just nss
+  and local files in el8.
+
 * Mon Dec 16 2019 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 4.11.0-0
 - NTP is not used by default in EL8 so moved ntp to list of OS relevant apps
   for EL6 and EL7 and added chronyd for EL8.

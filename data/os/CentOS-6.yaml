@@ -18,3 +18,5 @@ simp::nsswitch::defaults:
     - 'files'
     - 'dns'
     - 'myhostname'
+
+simp::sssd::client::local_domain: true
