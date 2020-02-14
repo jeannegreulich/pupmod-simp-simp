@@ -2,10 +2,7 @@ require 'spec_helper'
 
 shared_examples_for 'sssd client' do
   it { is_expected.to compile.with_all_deps }
-
   it { is_expected.to contain_class('sssd') }
-  it { is_expected.to contain_class('sssd::service::pam') }
-  it { is_expected.to contain_class('sssd::service::nss') }
 end
 
 describe 'simp::sssd::client' do
@@ -25,9 +22,6 @@ describe 'simp::sssd::client' do
               it { is_expected.to_not contain_sssd__domain('LOCAL')}
             end
             it { is_expected.to_not contain_sssd__domain('LDAP')}
-            it { is_expected.to contain_class('sssd::service::autofs') }
-            it { is_expected.to contain_class('sssd::service::sudo') }
-            it { is_expected.to contain_class('sssd::service::ssh') }
           end
 
           context 'with alternate params' do
@@ -51,9 +45,6 @@ describe 'simp::sssd::client' do
             else
               it { is_expected.to_not contain_sssd__domain('LOCAL')}
             end
-            it { is_expected.to_not contain_class('sssd::service::autofs') }
-            it { is_expected.to_not contain_class('sssd::service::sudo') }
-            it { is_expected.to_not contain_class('sssd::service::ssh') }
             it { is_expected.to contain_sssd__domain('LDAP').with({
               'min_id' => 501,
               'enumerate' => true,

@@ -40,7 +40,10 @@ fixtures:
     dhcp: https://github.com/simp/pupmod-simp-dhcp
     fips: https://github.com/simp/pupmod-simp-fips
     haveged: https://github.com/simp/pupmod-simp-haveged
-    hocon: https://github.com/simp/pupmod-puppetlabs-hocon
+    #    hocon: https://github.com/simp/pupmod-puppetlabs-hocon
+    hocon:
+      repo: https://github.com/puppetlabs/puppetlabs-hocon
+      ref: 1.0.1
     host_core:
       repo: https://github.com/simp/pupmod-puppetlabs-host_core.git
       puppet_version: ">= 6.0.0"
@@ -94,7 +97,10 @@ fixtures:
     sshkeys_core:
       repo: https://github.com/simp/pupmod-puppetlabs-sshkeys_core.git
       puppet_version: ">= 6.0.0"
-    sssd: https://github.com/simp/pupmod-simp-sssd
+    #sssd: https://github.com/simp/pupmod-simp-sssd
+    sssd:
+      repo: https://github.com/jeannegreulich/pupmod-simp-sssd
+      branch: SIMP-7443
     stdlib: https://github.com/simp/puppetlabs-stdlib
     stunnel: https://github.com/simp/pupmod-simp-stunnel
     systemd: https://github.com/simp/puppet-systemd

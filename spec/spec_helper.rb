@@ -3,6 +3,7 @@ require 'rspec-puppet'
 require 'simp/rspec-puppet-facts'
 include Simp::RspecPuppetFacts
 
+
 require 'pathname'
 
 # Load additional stub stuff when tests are not running on Windows
@@ -191,3 +192,8 @@ Dir.glob("#{RSpec.configuration.module_path}/*").each do |dir|
     fail "ERROR: The module '#{dir}' is not installed. Tests cannot continue."
   end
 end
+
+# Get any local methods in spec_helper_local.rb
+local_spec_helper = File.join(File.dirname(File.expand_path(__FILE__)),"spec_helper_local.rb")
+require_relative 'spec_helper_local' if File.exists?(local_spec_helper)
+

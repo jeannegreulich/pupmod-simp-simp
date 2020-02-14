@@ -61,7 +61,7 @@ class simp::sssd::client (
 
   # Don't attemt to setup sssd in el6 or 7 if a local or ldap domain is not defined.
 
-  if $local_domain or $ldap_domain or versioncmp($facts['os']['release']['major'], '8') >= 0
+  if $local_domain or $ldap_domain or versioncmp($facts['os']['release']['major'], '8') >= 0 {
 
     include 'sssd'
 
