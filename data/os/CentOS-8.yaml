@@ -10,3 +10,22 @@ simp::server::scenario_map:
   poss: "%{alias('simp::scenario::data::el8')}"
   simp: "%{alias('simp::scenario::data::el8')}"
   simp_lite: "%{alias('simp::scenario::data::el8')}"
+
+simp::base_apps::manage_elinks_config: false
+simp::base_apps::core_apps:
+  - 'dos2unix'
+  - 'hunspell'
+  - 'lsof'
+  - 'man'
+  - 'man-pages'
+  - 'mlocate'
+  - 'pinfo'
+  - 'sos'
+  - 'star'
+  - 'symlinks'
+  - 'vim-enhanced'
+  - 'words'
+  - 'irqbalance'
+  - 'netlabel_tools'
+  - 'bind-utils'
+

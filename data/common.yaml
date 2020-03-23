@@ -23,6 +23,9 @@ lookup_options:
   simp::nsswitch::defaults:
     merge:
       strategy: hash
+  simp::base_apps::core_apps:
+    merge:
+      strategy: first
 
 simp::vardir_owner: 'root'
 simp::vardir_group: 'root'
@@ -122,3 +125,26 @@ simp::nsswitch::ldap_options:
   sudoers:
     - 'files [!NOTFOUND=return]'
     - 'ldap'
+
+simp::base_apps::manage_elinks_config: true
+
+simp::base_apps::core_apps:
+- 'dos2unix'
+- 'elinks'
+- 'hunspell'
+- 'lsof'
+- 'man'
+- 'man-pages'
+- 'mlocate'
+- 'pax'
+- 'pinfo'
+- 'sos'
+- 'star'
+- 'symlinks'
+- 'vim-enhanced'
+- 'words'
+- 'x86info'
+- 'irqbalance'
+- 'netlabel_tools'
+- 'bind-utils'
+

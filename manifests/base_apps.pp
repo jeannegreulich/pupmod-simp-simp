@@ -24,33 +24,14 @@
 # @author Trevor Vaughan <tvaughan@onyxpoint.com>
 #
 class simp::base_apps (
+  Array[String,1]           $core_apps,           #Data in module
+  Boolean                   $manage_elinks_config,#Data in modules
   Simp::PackageEnsure       $ensure               = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
   Optional[Array[String,1]] $extra_apps           = undef,
-  Boolean                   $manage_elinks_config = true
 ) {
 
   simplib::module_metadata::assert($module_name, { 'blacklist' => ['Windows'] })
 
-  $core_apps = [
-    'dos2unix',
-    'elinks',
-    'hunspell',
-    'lsof',
-    'man',
-    'man-pages',
-    'mlocate',
-    'pax',
-    'pinfo',
-    'sos',
-    'star',
-    'symlinks',
-    'vim-enhanced',
-    'words',
-    'x86info',
-    'irqbalance',
-    'netlabel_tools',
-    'bind-utils'
-  ]
   $apps = $extra_apps ? {
     Array   => $core_apps + $extra_apps,
     default => $core_apps
